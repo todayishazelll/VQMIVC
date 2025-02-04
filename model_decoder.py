@@ -53,35 +53,32 @@ class Postnet(nn.Module):
         self.convolutions.append(
             nn.Sequential(
                 ConvNorm(80, 512,
-                         kernel_size=5, stride=1,
-                         padding=2,
-                         dilation=1, w_init_gain='tanh'),
+                         kernel_size=5, 
+                         padding=2, w_init_gain='tanh'), # Remove stride=1, dilation=1
                 nn.BatchNorm1d(512))
         )
 
-        for i in range(1, 5 - 1):
+        for i in range(3): # Original: range(1,4)
             self.convolutions.append(
                 nn.Sequential(
                     ConvNorm(512,
                              512,
-                             kernel_size=5, stride=1,
-                             padding=2,
-                             dilation=1, w_init_gain='tanh'),
+                             kernel_size=5, 
+                             padding=2, w_init_gain='tanh'),
                     nn.BatchNorm1d(512))
             )
 
         self.convolutions.append(
             nn.Sequential(
                 ConvNorm(512, 80,
-                         kernel_size=5, stride=1,
-                         padding=2,
-                         dilation=1, w_init_gain='linear'),
+                         kernel_size=5,
+                         padding=2,w_init_gain='linear'),
                 nn.BatchNorm1d(80))
             )
 
     def forward(self, x):
         for i in range(len(self.convolutions) - 1):
-            x = torch.tanh(self.convolutions[i](x))
+            x = torch.tanh(conv(x))
 
         x = self.convolutions[-1](x)
 
@@ -97,17 +94,12 @@ class Decoder(nn.Module):
         
         self.lstm1 = nn.LSTM(dim_neck+dim_emb+dim_lf0, dim_pre, 1, batch_first=True)
         
-        convolutions = []
-        for i in range(3):
-            conv_layer = nn.Sequential(
-                ConvNorm(dim_pre,
-                         dim_pre,
-                         kernel_size=5, stride=1,
-                         padding=2,
-                         dilation=1, w_init_gain='relu'),
-                nn.BatchNorm1d(dim_pre))
-            convolutions.append(conv_layer)
-        self.convolutions = nn.ModuleList(convolutions)
+        self.convolutions = nn.ModuleList([
+            nn.Sequential(
+                ConvNorm(dim_pre, dim_pre, kernel_size=5, padding=2, w_init_gain='relu'),
+                nn.BatchNorm1d(dim_pre)
+            ) for _ in range(3)
+        ])
         
         self.lstm2 = nn.LSTM(dim_pre, 1024, 2, batch_first=True)
         
@@ -125,9 +117,7 @@ class Decoder(nn.Module):
         
         outputs, _ = self.lstm2(x)
         
-        decoder_output = self.linear_projection(outputs)
-
-        return decoder_output   
+        return self.linear_projection(outputs)   
     
     
     
@@ -145,7 +135,11 @@ class Decoder_ac(nn.Module):
         z = F.interpolate(z.transpose(1, 2), scale_factor=2) # (bs, 140/2, 64) -> (bs, 64, 140/2) -> (bs, 64, 140)
         z = z.transpose(1, 2) # (bs, 64, 140) -> (bs, 140, 64)
         spk_embs_exp = spk_embs.unsqueeze(1).expand(-1,z.shape[1],-1)
-        lf0_embs = lf0_embs[:,:z.shape[1],:]
+        
+        # Ensure lf0_embs matches z's sequence length
+        if lf0_embs.shape[1] != z.shape[1]:
+            lf0_embs = F.interpolate(lf0_embs.transpose(1, 2), size=z.shape[1], mode='linear').transpose(1, 2)
+
         # print(z.shape, lf0_embs.shape)
         x = torch.cat([z, lf0_embs, spk_embs_exp], dim=-1)
         
