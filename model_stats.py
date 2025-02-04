@@ -50,4 +50,9 @@ def model_summary():
 
 # Call model summary function before training or inference
 if __name__ == "__main__":
+    start_time = time.time()  # Start time
     model_summary()
+    end_time = time.time()  # End time
+
+    elapsed_time = end_time - start_time
+    print(f"\nModel summary execution time: {elapsed_time:.4f} seconds")
