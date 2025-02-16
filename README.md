@@ -9,20 +9,12 @@
 ### Pre-trained models: [google-drive](https://drive.google.com/file/d/1Flw6Z0K2QdRrTn5F-gVt6HdR9TRPiaKy/view?usp=sharing) or [here](https://github.com/Wendison/VQMIVC/releases) | [Paper demo](https://wendison.github.io/VQMIVC-demo/)
 
 
-
 # Model Summary
-
-| Component         | Total Parameters | Trainable Parameters | Non-trainable Parameters | Total Mult-adds (M/G) | Input Size (MB) | Forward/Backward Pass Size (MB) | Params Size (MB) | Estimated Total Size (MB) | 
-|-------------------|------------------|-----------------------|--------------------------|-----------------------|-----------------|----------------------------------|-------------------|---------------------------|
-| **Encoder**    | 1,580,096           | 1,580,096                | 0                        | 25.76 M                | 0.03            | 2.18                             | 6.32              | 8.53                      | 
-| **Encoder_spk**    | 1,726,848           | 1,726,848                | 0                        | 101.64 M                | 0.03            | 1.56                             | 6.91              | 8.50                      | 
-| **Decoder**   | 24,773,440        | 24,773,440             | 0                        | 6.91 G               | 0.04            | 20.03                             | 99.09             | 119.17                     |
-
 
 ### Total Model Summary:
 - **Total Parameters**: 28,080,384
-- **Total Mult-adds**: 7.04 G
-- **Total Running Time**: 0.7360 s
+- **Total Mult-adds**: 3.32 G
+- **Total Running Time**: 0.146596 s
 
 
 
