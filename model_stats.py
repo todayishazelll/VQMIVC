@@ -7,52 +7,80 @@ from model_encoder import SpeakerEncoder as Encoder_spk
 
 from torchinfo import summary
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+class FullModel(torch.nn.Module):
+    def __init__(self, encoder_cfg, encoder_lf0_cfg, encoder_spk_cfg, decoder_cfg):
+        super(FullModel, self).__init__()
+        self.encoder = Encoder(**encoder_cfg)
+        self.encoder_lf0 = Encoder_lf0()
+        self.encoder_spk = Encoder_spk(**encoder_spk_cfg)
+        self.decoder = Decoder_ac(**decoder_cfg)
 
-# Model instance
-model = Decoder_ac().to(device)
+    def forward(self, mel, lf0):
+        # Encoder processes the mel spectrogram
+        z, c, z_beforeVQ, vq_loss, perplexity = self.encoder(mel)
 
-# Dummy input tensors
-batch_size = 2
-seq_len = 140
-dim_neck = 64
-dim_lf0 = 1
-dim_emb = 256
+        # Encoder_lf0 processes the lf0
+        lf0_embs = self.encoder_lf0(lf0)
 
-z = torch.randn(batch_size, seq_len // 2, dim_neck).to(device)  # (B, 70, 64) -> will be upsampled to (B, 140, 64)
-lf0_embs = torch.randn(batch_size, seq_len, dim_lf0).to(device)  # (B, 140, 1)
-spk_embs = torch.randn(batch_size, dim_emb).to(device)  # (B, 256)
+        # Encoder_spk processes the mel spectrogram to get speaker embeddings
+        spk_embs = self.encoder_spk(mel)
 
-# Print model summary
+        # Decoder generates the output mel spectrogram
+        output = self.decoder(z, lf0_embs, spk_embs)
+        return output
 
-def model_summary():
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Instantiate models
-    encoder = Encoder(in_channels=80, channels=512, n_embeddings=512, z_dim=64, c_dim=256).to(device)
-    encoder_lf0 = Encoder_lf0().to(device)
-    encoder_spk = Encoder_spk().to(device)
-    decoder = Decoder_ac(dim_neck=64).to(device)
+# Define the model configurations
+encoder_cfg = {
+    "in_channels": 80,  # Assuming 80 mel bins
+    "channels": 512,  # Example value, adjust as needed
+    "n_embeddings": 512,  # Example value, adjust as needed
+    "z_dim": 64,  # Example value, adjust as needed
+    "c_dim": 256  # Example value, adjust as needed
+}
 
-    # Print summaries
-    print("\nEncoder Summary:")
-    summary(encoder, input_size=(1, 80, 100))  # Example input shape (batch_size=1, channels=80, time_steps=100)
+encoder_spk_cfg = {
+    "c_in": 80,  # Assuming 80 mel bins
+    "c_h": 128,  # Example value, adjust as needed
+    "c_out": 256,  # Example value, adjust as needed
+    "kernel_size": 5,  # Example value, adjust as needed
+    "bank_size": 8,  # Example value, adjust as needed
+    "bank_scale": 1,  # Example value, adjust as needed
+    "c_bank": 128,  # Example value, adjust as needed
+    "n_conv_blocks": 6,  # Example value, adjust as needed
+    "n_dense_blocks": 6,  # Example value, adjust as needed
+    "subsample": [1, 2, 1, 2, 1, 2],  # Example value, adjust as needed
+    "act": "relu",  # Example value, adjust as needed
+    "dropout_rate": 0  # Example value, adjust as needed
+}
 
-    print("\nEncoder_lf0 Summary:")
-    summary(encoder_lf0, input_size=(1, 100))  # Example input shape (batch_size=1, time_steps=100)
+decoder_cfg = {
+    "dim_neck": 64,  # Example value, adjust as needed
+    "dim_lf0": 1,  # Assuming lf0 is a single dimension
+    "dim_emb": 256,  # Example value, adjust as needed
+    "dim_pre": 512  # Example value, adjust as needed
+}
 
-    print("\nEncoder_spk Summary:")
-    summary(encoder_spk, input_size=(1, 80, 100))  # Example input shape (batch_size=1, channels=80, time_steps=100)
+# Create the full model
+full_model = FullModel(encoder_cfg, {}, encoder_spk_cfg, decoder_cfg)
 
-    print("\nDecoder Summary:")
-    summary(model, input_data=(z, lf0_embs, spk_embs))
-    # Decoder receives three inputs: z, lf0_embs, and spk_emb
+# Define the input size for the summary
+input_mel = torch.randn(1, 80, 128)  # (batch_size, channels, length)
+input_lf0 = torch.randn(1, 128)  # (batch_size, length)
 
-# Call model summary function before training or inference
-if __name__ == "__main__":
-    start_time = time.time()  # Start time
-    model_summary()
-    end_time = time.time()  # End time
+# Print the summary of the full model
+print("Full Model Summary:")
+summary(full_model, input_data=[input_mel, input_lf0], device="cpu")
 
-    elapsed_time = end_time - start_time
-    print(f"\nModel summary execution time: {elapsed_time:.4f} seconds")
+# Measure the execution time
+print("\nMeasuring execution time...")
+start_time = time.time()
+
+# Simulate a forward pass
+with torch.no_grad():
+    full_model(input_mel, input_lf0)
+
+end_time = time.time()
+execution_time = end_time - start_time
+
+print(f"Execution time: {execution_time:.6f} seconds")
