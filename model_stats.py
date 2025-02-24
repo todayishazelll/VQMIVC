@@ -64,6 +64,27 @@ decoder_cfg = {
 # Create the full model
 full_model = FullModel(encoder_cfg, {}, encoder_spk_cfg, decoder_cfg)
 
+# Load checkpoint
+checkpoint_path = "VQMIVC-model.ckpt-500.pt"
+
+try:
+    checkpoint = torch.load(checkpoint_path, map_location="cpu")
+    print("Checkpoint Keys:", checkpoint.keys())
+
+    # Load each submodule separately
+    if "encoder" in checkpoint:
+        full_model.encoder.load_state_dict(checkpoint["encoder"], strict=False)
+    if "encoder_spk" in checkpoint:
+        full_model.encoder_spk.load_state_dict(checkpoint["encoder_spk"], strict=False)
+    if "decoder" in checkpoint:
+        full_model.decoder.load_state_dict(checkpoint["decoder"], strict=False)
+
+    full_model.eval()  # Set model to evaluation mode
+    print("Checkpoint loaded successfully!")
+
+except Exception as e:
+    print(f"Error loading checkpoint: {e}")
+
 # Define the input size for the summary
 input_mel = torch.randn(1, 80, 128)  # (batch_size, channels, length)
 input_lf0 = torch.randn(1, 128)  # (batch_size, length)
