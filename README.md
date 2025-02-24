@@ -14,7 +14,7 @@
 ### Total Model Summary:
 - **Total Parameters**: 28,080,384
 - **Total Mult-adds**: 3.32 G
-- **Total Running Time**: 0.146596 s
+- **Total Running Time**: 0.147558 s
 
 
 
