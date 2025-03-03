@@ -28,7 +28,7 @@ def model_summary():
 
     # Instantiate models
     encoder = Encoder(in_channels=80, channels=512, n_embeddings=512, z_dim=64, c_dim=256).to(device)
-    encoder_lf0 = Encoder_lf0().to(device)
+    encoder_lf0 = Encoder_lf0(typ='emb').to(device)
     encoder_spk = Encoder_spk().to(device)
     decoder = Decoder_ac(dim_neck=64).to(device)
 
