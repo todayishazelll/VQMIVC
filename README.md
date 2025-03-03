@@ -1,15 +1,15 @@
-## VQMIVC: Vector Quantization and Mutual Information-Based Unsupervised Speech Representation Disentanglement for One-shot Voice Conversion (Interspeech 2021)
-[![arXiv](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2106.10132)
-[![GitHub Stars](https://img.shields.io/github/stars/Wendison/VQMIVC?style=social)](https://github.com/Wendison/VQMIVC)
-[![download](https://img.shields.io/github/downloads/Wendison/VQMIVC/total.svg)](https://github.com/Wendison/VQMIVC/releases)
-
-### [Run VQMIVC on Replicate](https://replicate.ai/wendison/vqmivc)
-### Integrated to [Huggingface Spaces](https://huggingface.co/spaces) with [Gradio](https://github.com/gradio-app/gradio). See [Gradio Web Demo](https://huggingface.co/spaces/akhaliq/VQMIVC).
-
 ### Pre-trained models: [google-drive](https://drive.google.com/file/d/1Flw6Z0K2QdRrTn5F-gVt6HdR9TRPiaKy/view?usp=sharing) or [here](https://github.com/Wendison/VQMIVC/releases) | [Paper demo](https://wendison.github.io/VQMIVC-demo/)
 
 
 # Model Summary
+(models_stats.py)
+
+| Component         | Total Parameters | Total Mult-adds (M/G) | Input Size (MB) | Forward/Backward Pass Size (MB) | Params Size (MB) | Estimated Total Size (MB) | 
+|-------------------|------------------|-----------------------|--------------------------|-----------------------|-----------------|----------------------------------|-------------------|---------------------------|--------------------|
+| **Encoder**    | 1,580,096           |     25.76 M      | 0.03               | 2.18            | 6.32                            | 8.53              |
+| **Encoder_spk**    | 1,726,848           |        101.64 M                | 0.03           | 1.56                           | 6.91              | 8.50                     | 
+| **Decoder**   | 24,773,440       |        6.91 G         | 0.04        | 20.03           | 99.09                            | 119.17                 | 
+
 
 ### Total Model Summary:
 - **Total Parameters**: 28,080,384
