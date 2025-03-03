@@ -6,15 +6,16 @@
 
 | Component         | Total Parameters | Total Mult-adds (M/G) | Input Size (MB) | Forward/Backward Pass Size (MB) | Params Size (MB) | Estimated Total Size (MB) | 
 |-------------------|------------------|-----------------------|--------------------------|-----------------------|-----------------|----------------------------------|
-| **Encoder**    | 1,580,096           |     25.76 M      | 0.03               | 2.18            | 6.32                            | 8.53              |
-| **Encoder_spk**    | 1,726,848           |        101.64 M                | 0.03           | 1.56                           | 6.91              | 8.50                     | 
-| **Decoder**   | 24,773,440       |        6.91 G         | 0.04        | 20.03           | 99.09                            | 119.17                 | 
+| **Encoder**    | 1,580,096           |     32.67 M      | 0.04               | 2.79            | 6.32                            | 9.15              |
+| **Encoder_spk**    | 1,726,848           |        129.98 M                | 0.04           | 2.00                           | 6.91              | 8.95                     | 
+| **Decoder**   | 24,773,440      |        3.16 G         | 0.17        | 9.16           | 99.09                            | 108.42                 | 
 
 
 ### Total Model Summary:
 - **Total Parameters**: 28,080,384
 - **Total Mult-adds**: 3.32 G
-- **Total Running Time**: 0.147558 s
+- **Total Running Time**: 0.219081 s
+
 
 
 
